@@ -5,6 +5,9 @@ import { auth, googleProvider } from '../../utils/firebase'
 import {FcGoogle} from "react-icons/fc"
 import { useDispatch, useSelector } from 'react-redux'
 import { setUserData } from '../../redux/userSlice'
+import Sidebar from '../components/Sidebar'
+import ChatArea from '../components/ChatArea'
+import Artifact from '../components/Artifact'
 
 
 const Home = () => {
@@ -49,6 +52,10 @@ const Home = () => {
 
   return (
     <div className='h-screen flex bg-[#0d0f14] text-white overflow-hidden'>
+
+      <Sidebar/>
+      <ChatArea/>
+      <Artifact/>
 
         {
             !userData &&
