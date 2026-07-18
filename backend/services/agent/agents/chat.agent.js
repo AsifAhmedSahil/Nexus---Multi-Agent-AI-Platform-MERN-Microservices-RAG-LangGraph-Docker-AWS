@@ -1,8 +1,12 @@
-import { getModel } from "../config/llmmodels.js"
+import { AIMessage, HumanMessage, SystemMessage } from "@langchain/core/messages";
+import { getModel } from "../config/llmmodels.js";
+import { getMemory } from "../config/memory.js";
 
-export const chatAgent = async(state)=>{
-    const llm = await getModel("chat")
-    const systemPrompt = `
+export const chatAgent = async (state) => {
+  const history = await getMemory(state.conversationId);
+
+  const llm = await getModel("chat");
+  const systemPrompt = `
 You are NexaAI, an intelligent AI assistant.
 
 Your primary goal is to provide accurate, clear, helpful, and honest responses.
@@ -54,20 +58,27 @@ Always prioritize:
 3. Usefulness
 4. Readability
 `;
-    const response = await llm.invoke([
-        {
-            "role":"system",
-            "content":systemPrompt
-        },
-        {
-            "role":"human",
-            "content":state.prompt 
-        }
-    ])
 
-    return {
-        ...state,
-        aiResponse:response.content
+  const messages = [new SystemMessage(systemPrompt)];
+
+  history.forEach((msg) => {
+    if(msg.role == "user"){
+        messages.push(new HumanMessage(msg.content))
     }
+    if(msg.role == "assistant"){
+        messages.push(new AIMessage(msg.content))
+    }
+  });
 
-}
+
+  messages.push(new HumanMessage(state.prompt))
+
+  console.log(messages)
+
+  const response = await llm.invoke(messages);
+
+  return {
+    ...state,
+    aiResponse: response.content,
+  };
+};
