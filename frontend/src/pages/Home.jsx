@@ -4,10 +4,11 @@ import api from '../../utils/axios'
 import { auth, googleProvider } from '../../utils/firebase'
 import {FcGoogle} from "react-icons/fc"
 import { useDispatch, useSelector } from 'react-redux'
-import { setUserData } from '../../redux/userSlice'
+
 import Sidebar from '../components/Sidebar'
 import ChatArea from '../components/ChatArea'
 import Artifact from '../components/Artifact'
+import { setUserData } from '../redux/userSlice'
 
 
 const Home = () => {

@@ -5,7 +5,8 @@ import api from '../utils/axios'
 import Home from './pages/Home'
 import { getCurrentUser } from './features/getCurrentUser'
 import { useDispatch } from 'react-redux'
-import { setUserData } from '../redux/userSlice'
+import { setUserData } from './redux/userSlice'
+
 
 
 const App = () => {
