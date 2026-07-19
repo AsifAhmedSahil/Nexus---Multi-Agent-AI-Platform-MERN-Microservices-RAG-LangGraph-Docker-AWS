@@ -1,6 +1,16 @@
 import { getModel } from "../config/llmmodels.js"
 
 export const router = async(state)=>{
+
+    if(state.agent && state.agent !== "auto"){
+        return {
+            ...state,
+            agent:state.agent 
+        }
+    }
+
+
+     
     const llm = await getModel("router")
     const prompt = `You are an agent router. 
     

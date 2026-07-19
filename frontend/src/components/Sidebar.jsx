@@ -132,7 +132,7 @@ if (collapsed) {
 
       <button
         aria-label="New Chat"
-        onClick={handleCreateConversation}
+        // onClick={handleCreateConversation}
         className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition-all duration-150 hover:bg-white/[0.05] hover:text-slate-200 active:scale-95"
         onClick={()=>dispatch(setSelectedConversation(null))}
       >
@@ -143,7 +143,7 @@ if (collapsed) {
     {/* New Chat */}
     <div className="px-4 pt-4 pb-2">
       <button
-        onClick={handleCreateConversation}
+        // onClick={handleCreateConversation}
         className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-700 py-[11px] text-sm font-medium text-white transition-all duration-150 hover:opacity-95 active:scale-[0.98]"
         onClick={()=>dispatch(setSelectedConversation(null))}
       >
