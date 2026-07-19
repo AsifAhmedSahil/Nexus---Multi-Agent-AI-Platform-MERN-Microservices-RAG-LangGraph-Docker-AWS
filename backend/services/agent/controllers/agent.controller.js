@@ -5,7 +5,7 @@ import redis from "../../../shared/redis/redis.js";
 
 export const agent = async (req, res) => {
   try {
-    const { prompt, conversationId } = req.body;
+    const { prompt, conversationId ,agent} = req.body;
 
    
 
@@ -18,6 +18,7 @@ export const agent = async (req, res) => {
     const result = await graph.invoke({
       prompt,
       conversationId,
+      agent
     });
 
     await addMessage(conversationId,"user",prompt)
@@ -27,9 +28,14 @@ export const agent = async (req, res) => {
       conversationId,
       role: "assistant",
       content: result.aiResponse,
+      images:result.images
     });
 
-    return res.status(200).json(result.aiResponse);
+    return res.status(200).json({
+      answer:result.aiResponse,
+      images: result.images
+
+  });
   } catch (error) {
     console.error(error);
 

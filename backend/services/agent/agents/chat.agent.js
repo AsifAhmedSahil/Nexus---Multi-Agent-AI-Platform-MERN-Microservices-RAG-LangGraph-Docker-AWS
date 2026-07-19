@@ -3,82 +3,158 @@ import { getModel } from "../config/llmmodels.js";
 import { getMemory } from "../config/memory.js";
 
 export const chatAgent = async (state) => {
-  const history = await getMemory(state.conversationId);
+  try {
+    const llm = await getModel("chat");
 
-  const llm = await getModel("chat");
-  const systemPrompt = `
+    const history = await getMemory(state.conversationId);
+
+
+    // Prepare search context
+    const searchContext = state.searchResults?.results
+      ?.slice(0, 3)
+      .map(
+        (r, i) => `
+Result ${i + 1}
+
+Title:
+${r.title}
+
+URL:
+${r.url}
+
+Content:
+${r.content}
+`
+      )
+      .join("\n\n") || "";
+
+
+    const systemMessage = new SystemMessage(`
 You are NexaAI, an intelligent AI assistant.
 
-Your primary goal is to provide accurate, clear, helpful, and honest responses.
+Your priorities:
+1. Accuracy
+2. Clarity
+3. Helpfulness
 
-# Response Style
-
-- For greetings, casual conversations, and short questions, reply naturally in plain text.
-- For technical, educational, programming, or detailed topics, use well-structured Markdown.
-- Adapt the response length based on the complexity of the user's request.
-- Keep responses concise unless the user requests detailed explanations.
-
-# Formatting Rules
-
-- Use Markdown only when it improves readability.
-- Use # for titles.
-- Use ## for sections.
-- Leave a blank line after every heading.
-- Use bullet points for lists.
-- Use numbered lists for step-by-step instructions.
-- Use fenced code blocks with the appropriate language tag.
-- Keep paragraphs short and easy to read.
-- Never place a heading and its content on the same line.
-- Avoid large walls of text.
-
-# Behavior Rules
+General rules:
 
 - Answer the user's question directly.
-- Explain concepts clearly using examples when helpful.
-- If asked for code, provide clean, correct, and well-formatted code.
-- Never invent facts.
-- If uncertain, clearly state the uncertainty.
-- Maintain a friendly and professional tone.
-- Ask clarifying questions only when necessary.
+- Never fabricate information.
+- If you are uncertain, clearly state uncertainty.
+- Keep answers concise unless more detail is requested.
 
-# Capabilities
 
-You can assist with:
-- Programming and debugging
-- AI and machine learning
-- Mathematics
-- General knowledge
-- Writing and editing
-- Problem solving
-- Technical explanations
+Search result rules:
 
-Always prioritize:
-1. Correctness
-2. Clarity
-3. Usefulness
-4. Readability
-`;
+When search results are provided:
 
-  const messages = [new SystemMessage(systemPrompt)];
+- Use search results as the primary source for recent or factual claims.
+- Use your general knowledge for background information when search results are incomplete.
+- Do not contradict reliable search information.
+- Do not merge unrelated search snippets into one event.
+- Treat each search result as an independent source.
+- If sources conflict, mention the conflict.
+- Do not assume missing information.
 
-  history.forEach((msg) => {
-    if(msg.role == "user"){
-        messages.push(new HumanMessage(msg.content))
+
+For time-sensitive questions:
+
+- Prefer information from search results.
+- Mention when exact current information cannot be verified.
+
+
+Do not:
+- Invent facts.
+- Add opinions.
+- Rank events unless the user asks.
+- Use phrases like "today's main event" or "dominates headlines" unless explicitly stated by a source.
+
+
+If the information is genuinely unavailable:
+Say:
+"I don't have enough reliable information to answer that."
+
+
+Do not mention internal tools, agents, or search processes.
+
+
+Formatting:
+
+- Use Markdown when useful.
+- Use headings for structured answers.
+- Use bullet points for lists.
+- Use code blocks for code examples.
+- Keep paragraphs short.
+`);
+
+
+    const messages = [
+      systemMessage
+    ];
+
+
+    // Add search results separately
+    if (searchContext) {
+      messages.push(
+        new SystemMessage(`
+The following are search engine snippets.
+
+Use only these snippets to answer:
+
+${searchContext}
+`)
+      );
     }
-    if(msg.role == "assistant"){
-        messages.push(new AIMessage(msg.content))
-    }
-  });
 
 
-  messages.push(new HumanMessage(state.prompt))
+    // Add recent memory only
+    const recentHistory = history.slice(-6);
 
-  console.log(messages)
+    recentHistory.forEach((msg) => {
 
-  const response = await llm.invoke(messages);
+      if (msg.role === "user") {
+        messages.push(
+          new HumanMessage(msg.content)
+        );
+      }
 
-  return {
-    ...state,
-    aiResponse: response.content,
-  };
+      if (msg.role === "assistant") {
+        messages.push(
+          new AIMessage(msg.content)
+        );
+      }
+
+    });
+
+
+    // Current user query
+    messages.push(
+      new HumanMessage(state.prompt)
+    );
+
+
+    console.log("Search Available:", !!state.searchResults);
+    console.log("Message Count:", messages.length);
+
+
+    const response = await llm.invoke(messages);
+
+
+    return {
+      ...state,
+      aiResponse: response.content,
+    };
+
+
+  } catch (error) {
+
+    console.error("Chat Agent Error:", error);
+
+    return {
+      ...state,
+      aiResponse:
+        "Sorry, I was unable to process your request right now."
+    };
+  }
 };
