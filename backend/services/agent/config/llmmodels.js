@@ -1,6 +1,6 @@
 import { ChatGroq } from "@langchain/groq";
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
-
+import {ChatOpenRouter} from "@langchain/openrouter"
 console.log("GROQ KEY:", process.env.GROQ_API_KEY);
 const groq = new ChatGroq({
     apiKey: process.env.GROQ_API_KEY,
@@ -14,6 +14,12 @@ const gemini = new ChatGoogleGenerativeAI({
     temperature: 0.2,
 });
 
+const openrouter = new ChatOpenRouter({
+    model:"deepseek/deepseek-chat",
+    temperature:0,
+    maxTokens:2500
+})
+
 export const getModel = async (agent) => {
     switch (agent) {
         case "chat":
@@ -23,7 +29,7 @@ export const getModel = async (agent) => {
             return groq;
 
         case "coding":
-            return gemini;
+            return openrouter;
 
         default:
             return groq;
