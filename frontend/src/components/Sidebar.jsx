@@ -123,7 +123,7 @@ if (collapsed) {
       </button>
 
       <span className="flex-1 text-[16px] font-semibold tracking-tight text-slate-100">
-        CortexAI
+        NexusAI
       </span>
 
       <span className="rounded-full border border-indigo-500/20 bg-indigo-500/10 px-2 py-0.5 text-[10px] font-medium tracking-wide text-indigo-400">
