@@ -63,6 +63,7 @@ if (collapsed) {
         aria-label="New Chat"
         onClick={handleCreateConversation}
         className="flex items-center justify-center w-9 h-9 rounded-xl text-slate-500 hover:text-slate-200 hover:bg-white/[0.05] transition-all duration-150 cursor-pointer"
+        onClick={()=>dispatch(setSelectedConversation(null))}
       >
         <Plus size={16} />
       </button>
@@ -133,6 +134,7 @@ if (collapsed) {
         aria-label="New Chat"
         onClick={handleCreateConversation}
         className="flex h-8 w-8 items-center justify-center rounded-lg text-slate-500 transition-all duration-150 hover:bg-white/[0.05] hover:text-slate-200 active:scale-95"
+        onClick={()=>dispatch(setSelectedConversation(null))}
       >
         <PenSquare size={15} />
       </button>
@@ -143,6 +145,7 @@ if (collapsed) {
       <button
         onClick={handleCreateConversation}
         className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-violet-700 py-[11px] text-sm font-medium text-white transition-all duration-150 hover:opacity-95 active:scale-[0.98]"
+        onClick={()=>dispatch(setSelectedConversation(null))}
       >
         <Plus size={15} />
         New Chat
