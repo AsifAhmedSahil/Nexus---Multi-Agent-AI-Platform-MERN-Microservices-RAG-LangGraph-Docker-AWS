@@ -40,6 +40,7 @@ const Artifact = () => {
                 {artifacts[0]?.title}
               </div>
             </div>
+            {/* update */}
 
             <div className="flex items-center gap-1 shrink-0">
               <button className="flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-medium text-slate-400 hover:text-slate-200 hover:bg-white/[0.05] rounded-lg transition-colors duration-150 bg-transparent border-none cursor-pointer">
