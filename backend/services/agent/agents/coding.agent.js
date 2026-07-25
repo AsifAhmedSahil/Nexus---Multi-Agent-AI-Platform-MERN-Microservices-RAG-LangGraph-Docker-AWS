@@ -41,6 +41,13 @@ Rules:
 - Return ONLY valid JSON.
 - The response must start with { and end with }.
 
+IMAGES
+
+Always use real unsplash images.
+Never use placeholders.
+return only valid JSON.
+
+
 Schema:
 
 {
