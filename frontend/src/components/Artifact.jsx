@@ -16,7 +16,7 @@ const Artifact = () => {
 
   if (artifacts.length == 0) return;
 
-
+// update
 
   const file = artifacts[0]?.files[activeFile]
   const htmlFile = artifacts[0]?.files?.find((f) => f.name === "index.html");
