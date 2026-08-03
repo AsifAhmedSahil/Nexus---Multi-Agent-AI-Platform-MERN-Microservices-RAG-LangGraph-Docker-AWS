@@ -7,7 +7,7 @@ export const getFromS3 = async(fileName,expiresIn=600)=>{
         s3,
         new GetObjectCommand({
             Bucket: process.env.AWS_BUCKET_NAME,
-            key:fileName,
+            Key:fileName,
             
         }),
         {expiresIn}
