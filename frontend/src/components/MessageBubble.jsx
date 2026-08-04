@@ -143,7 +143,7 @@ ${
               <a
                 href={href}
                 target="_blank"
-                rel="norefferrer"
+                rel="noreferrer"
                 className="text-indigo-400 underline inline-flex items-center gap-1"
               >
                 {children} <ExternalLink size={16} />
