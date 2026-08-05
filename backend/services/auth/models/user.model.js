@@ -7,7 +7,20 @@ const userSchema = new mongoose.Schema({
     },
     name:String,
     email:String,
-    avatar:String 
+    avatar:String,
+    plan:{
+        type:String,
+        default:"free"
+    },
+    credits:{
+        type:Number,
+        default:0
+    },
+    totalCredits:{
+        type:Number,
+        default:0
+    },
+    planExpiresAt:Date 
 },{
     timestamps:true
 })
@@ -15,4 +28,3 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model("User",userSchema)
 
 export default User
-

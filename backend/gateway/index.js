@@ -42,6 +42,10 @@ app.use(
   "/api/agent",protect,
   proxy(process.env.AGENT_SERVICE)
 );
+app.use(
+  "/api/billing",protect,
+  proxyWithHeader(process.env.BILLING_SERVICE)
+);
 
 app.get("/api/me",protect,getCurrentUser)
 
