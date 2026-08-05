@@ -16,7 +16,6 @@ export const createOrder = async (req, res) => {
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-      payment_method_types: ["card"],
       line_items: [
         {
           price_data: {
@@ -30,7 +29,7 @@ export const createOrder = async (req, res) => {
         },
       ],
       metadata: {
-        userId:userId.toString(),
+        userId: String(userId),
         credits: String(selectedPlan.credits),
         plan: selectedPlan.name,
       },
