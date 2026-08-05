@@ -20,10 +20,12 @@ import {
 import { createConversation } from "../features/createConversation";
 import logout from "../features/logout";
 import { setUserData } from "../redux/userSlice";
+import BillingDrawer from "./BillingDrawer";
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [imageError, setImageError] = useState(false);
+  const [showBilling, setShowBilling] = useState(false);
   const dispatch = useDispatch();
   const { conversations, selectedConversation } = useSelector(
     (state) => state.conversation,
@@ -231,6 +233,7 @@ if (collapsed) {
 
           <div className="flex items-center gap-1">
             <button
+            onClick={()=>setShowBilling(true)}
               aria-label="Upgrade"
               className="flex h-8 w-8 items-center justify-center rounded-lg text-amber-500 transition-all duration-150 hover:bg-white/[0.08] hover:text-amber-400"
             >
@@ -256,6 +259,11 @@ if (collapsed) {
       )}
     </div>
   </div>
+
+  <BillingDrawer
+  open={showBilling}
+  onClose={()=>setShowBilling(false)}
+  />
 </div>
   );
 };

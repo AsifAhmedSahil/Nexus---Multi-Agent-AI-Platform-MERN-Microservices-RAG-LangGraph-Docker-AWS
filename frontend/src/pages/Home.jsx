@@ -9,6 +9,8 @@ import Sidebar from '../components/Sidebar'
 import ChatArea from '../components/ChatArea'
 import Artifact from '../components/Artifact'
 import { setUserData } from '../redux/userSlice'
+import { verifyPayment } from '../features/verifyPayment'
+import { getCurrentUser } from '../features/getCurrentUser'
 
 
 const Home = () => {
@@ -16,6 +18,21 @@ const Home = () => {
     const {userData} = useSelector(state=>state.user)
     const dispatch = useDispatch()
     
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const sessionId = params.get("session_id")
+
+    if (sessionId) {
+      verifyPayment(sessionId).then(async (data) => {
+        if (data?.paid) {
+          const user = await getCurrentUser()
+          dispatch(setUserData(user))
+        }
+        window.history.replaceState({}, "", window.location.pathname)
+      })
+    }
+  }, [])
 
      const handleLogin = async (token) => {
     try {
