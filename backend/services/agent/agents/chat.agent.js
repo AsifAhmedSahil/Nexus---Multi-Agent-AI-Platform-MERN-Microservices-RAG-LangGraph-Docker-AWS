@@ -1,19 +1,26 @@
-import { AIMessage, HumanMessage, SystemMessage } from "@langchain/core/messages";
+import {
+  AIMessage,
+  HumanMessage,
+  SystemMessage,
+} from "@langchain/core/messages";
 import { getModel } from "../config/llmmodels.js";
 import { getMemory } from "../config/memory.js";
+import { deductCredits } from "../utils/deductCredits.js";
 
 export const chatAgent = async (state) => {
   try {
+    
+    
     const llm = await getModel("chat");
 
     const history = await getMemory(state.conversationId);
 
-
     // Prepare search context
-    const searchContext = state.searchResults?.results
-      ?.slice(0, 3)
-      .map(
-        (r, i) => `
+    const searchContext =
+      state.searchResults?.results
+        ?.slice(0, 3)
+        .map(
+          (r, i) => `
 Result ${i + 1}
 
 Title:
@@ -24,10 +31,9 @@ ${r.url}
 
 Content:
 ${r.content}
-`
-      )
-      .join("\n\n") || "";
-
+`,
+        )
+        .join("\n\n") || "";
 
     const systemMessage = new SystemMessage(`
 You are NexaAI, an intelligent AI assistant.
@@ -88,11 +94,7 @@ Formatting:
 - Keep paragraphs short.
 `);
 
-
-    const messages = [
-      systemMessage
-    ];
-
+    const messages = [systemMessage];
 
     // Add search results separately
     if (searchContext) {
@@ -103,58 +105,43 @@ The following are search engine snippets.
 Use only these snippets to answer:
 
 ${searchContext}
-`)
+`),
       );
     }
-
 
     // Add recent memory only
     const recentHistory = history.slice(-6);
 
     recentHistory.forEach((msg) => {
-
       if (msg.role === "user") {
-        messages.push(
-          new HumanMessage(msg.content)
-        );
+        messages.push(new HumanMessage(msg.content));
       }
 
       if (msg.role === "assistant") {
-        messages.push(
-          new AIMessage(msg.content)
-        );
+        messages.push(new AIMessage(msg.content));
       }
-
     });
 
-
     // Current user query
-    messages.push(
-      new HumanMessage(state.prompt)
-    );
-
+    messages.push(new HumanMessage(state.prompt));
 
     console.log("Search Available:", !!state.searchResults);
     console.log("Message Count:", messages.length);
 
-
     const response = await llm.invoke(messages);
 
+    await deductCredits(state.userId,"chat")
 
     return {
       ...state,
       aiResponse: response.content,
     };
-
-
   } catch (error) {
-
     console.error("Chat Agent Error:", error);
 
     return {
       ...state,
-      aiResponse:
-        "Sorry, I was unable to process your request right now."
+      aiResponse: "Sorry, I was unable to process your request right now.",
     };
   }
 };
