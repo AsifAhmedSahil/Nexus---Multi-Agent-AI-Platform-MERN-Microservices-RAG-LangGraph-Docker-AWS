@@ -40,7 +40,7 @@ app.use(
 );
 app.use(
   "/api/agent",protect,
-  proxy(process.env.AGENT_SERVICE)
+  proxyWithHeader(process.env.AGENT_SERVICE)
 );
 app.use(
   "/api/billing",protect,

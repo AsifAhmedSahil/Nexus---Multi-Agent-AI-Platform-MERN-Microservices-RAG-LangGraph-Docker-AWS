@@ -2,6 +2,7 @@ import { getModel } from "../config/llmmodels.js";
 import axios from "axios";
 import { uploadToS3 } from "../utils/uploadToS3.js";
 import { getFromS3 } from "../utils/getFromS3.js";
+import { deductCredits } from "../utils/deductCredits.js";
 export const visionAgent = async (state) => {
  try {
      const llm = await getModel("image");
@@ -37,6 +38,7 @@ export const visionAgent = async (state) => {
   )}?width=1024&height=1024&nologo=true`;
 
   const imageRes = await axios.get(imageUrl, { responseType: "arraybuffer" });
+  await deductCredits(state.userId,"vision")
 
   // Resolve the real content type & extension from the provider response.
   // (Pollinations returns JPEG by default, not PNG.)
