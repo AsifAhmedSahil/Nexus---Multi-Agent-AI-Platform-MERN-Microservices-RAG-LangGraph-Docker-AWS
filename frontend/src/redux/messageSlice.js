@@ -3,7 +3,8 @@ const messageSlice = createSlice({
     name:"message",
     initialState:{
         messages:[],
-        artifacts:[]
+        artifacts:[],
+        typing:false
     },
     reducers:{
        setMessages:(state,action)=>{
@@ -14,10 +15,13 @@ const messageSlice = createSlice({
        },
        setArtifacts:(state,action)=>{
         state.artifacts=action.payload 
+       },
+       setTyping:(state,action)=>{
+        state.typing=action.payload 
        }
-      
+       
     }
 }) 
 
-export const {setMessages,addMessages,setArtifacts} = messageSlice.actions
+export const {setMessages,addMessages,setArtifacts,setTyping} = messageSlice.actions
 export default messageSlice.reducer

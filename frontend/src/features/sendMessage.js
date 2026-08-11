@@ -1,15 +1,13 @@
-import React from 'react'
-import api from '../../utils/axios'
+import api from "../../utils/axios.js";
 
-const sendMessage =async (payload) => {
+const sendMessage = async (payload) => {
   try {
-    const {data} = await api.post("/api/agent/chat",payload)
-    return data
+    const { data } = await api.post("/api/agent/chat", payload);
+    return data;
   } catch (error) {
-    console.log(error)
-    return null
-    
+    console.error("sendMessage error:", error);
+    throw error;
   }
-}
+};
 
-export default sendMessage
+export default sendMessage;
