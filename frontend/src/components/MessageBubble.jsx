@@ -1,4 +1,4 @@
-import { Check, Copy, ExternalLink } from "lucide-react";
+import { Check, Copy, ExternalLink, FileText } from "lucide-react";
 import React from "react";
 import { useState } from "react";
 import Markdown from "react-markdown";
@@ -6,7 +6,7 @@ import remarkGfm from "remark-gfm";
 import {Prism as SyntaxHighlighter} from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
-const MessageBubble = ({ role, content, images }) => {
+const MessageBubble = ({ role, content, images, file }) => {
   const isUser = role === "user";
   const [lightBox, setLightBox] = useState(null);
   const [copiedCode, setCopiedCode] = useState("");
@@ -32,6 +32,25 @@ ${
     : "text-slate-200 rounded-tl-sm"
 }`}
       >
+        {/* Attached PDF */}
+        {file && (
+          <a
+            href={file.url}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 mt-3 hover:bg-white/10 transition cursor-pointer"
+          >
+            <FileText size={18} className="text-red-400 shrink-0" />
+            <div className="min-w-0">
+              <p className="text-xs text-white truncate">{file.name}</p>
+              <p className="text-[10px] text-slate-500">
+                {Math.ceil(file.size / 1024)} KB
+              </p>
+            </div>
+            <ExternalLink size={14} className="text-slate-500 shrink-0 ml-auto" />
+          </a>
+        )}
+
         {/* Images */}
 
         {images?.length > 0 && (
@@ -41,9 +60,8 @@ ${
                 key={i}
                 src={img}
                 onClick={() => setLightBox(img)}
-                alt="search result"
+                alt="uploaded"
                 loading="lazy"
-                onError={(e) => e.currentTarget.remove()}
                 className="w-40 h-28 rounded-xl object-cover border border-white/10 cursor-zoom-in hover:opacity-90 transition"
               />
             ))}

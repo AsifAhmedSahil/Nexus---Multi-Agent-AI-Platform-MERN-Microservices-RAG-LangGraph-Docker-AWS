@@ -8,12 +8,13 @@ import {
   Paperclip,
   Presentation,
   Send,
+  X,
   Zap,
 } from "lucide-react";
 import React, { useRef, useState } from "react";
 import sendMessage from "../features/sendMessage";
 import { useDispatch, useSelector } from "react-redux";
-import { addMessages, setArtifacts, setMessages } from "../redux/messageSlice";
+import { addMessages, setArtifacts, setMessages, setTyping } from "../redux/messageSlice";
 import { createConversation } from "../features/createConversation";
 import {
   addConversations,
@@ -27,6 +28,8 @@ const ChatInput = () => {
   const [selectedAgent, setSelectedAgent] = useState("Auto");
   const { selectedConversation } = useSelector((state) => state.conversation);
   const { messages } = useSelector((state) => state.message);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const fileRef = useRef(null);
   const dispatch = useDispatch();
   const textareaRef = useRef(null);
 
@@ -36,56 +39,99 @@ const ChatInput = () => {
     el.style.height = `${el.scrollHeight}px`;
   };
 
-  const handleSendMessage = async () => {
+const handleSendMessage = async () => {
+  try {
     let conversation = selectedConversation;
 
     if (!conversation) {
       const conv = await createConversation();
+
       dispatch(setSelectedConversation(conv));
       dispatch(addConversations(conv));
+
       conversation = conv;
     }
 
-    if (conversation.title == "New Chat") {
-      await updateConversation({ id: conversation?._id, title: value.trim() });
+    if (conversation.title === "New Chat") {
+      await updateConversation({
+        id: conversation._id,
+        title: value.trim(),
+      });
+
       dispatch(
         setConvTitle({
           conversationId: conversation._id,
           title: value.slice(0, 40),
-        }),
+        })
       );
     }
 
-    const payload = {
-      prompt: value.trim(),
-      conversationId: conversation?._id,
-      agent:selectedAgent.toLowerCase()
-    };
+    const formData = new FormData();
+
+    formData.append("prompt", value.trim());
+    formData.append("conversationId", conversation._id);
+    formData.append("agent", selectedAgent.toLowerCase());
+
+    if (selectedFile) {
+      formData.append("file", selectedFile);
+    }
+
+    const userImages = selectedFile?.type?.startsWith("image/")
+      ? [URL.createObjectURL(selectedFile)]
+      : [];
 
     dispatch(
       addMessages({
         role: "user",
         content: value.trim(),
-      }),
+        images: userImages,
+        file:
+          selectedFile?.type === "application/pdf"
+            ? {
+                name: selectedFile.name,
+                size: selectedFile.size,
+                url: URL.createObjectURL(selectedFile),
+              }
+            : undefined,
+      })
     );
 
     setValue("");
+    setSelectedFile(null);
+    if (fileRef.current) fileRef.current.value = "";
 
-    const data = await sendMessage(payload);
+    dispatch(setTyping(true));
 
-    dispatch(setArtifacts(data.artifacts || []))
+    const data = await sendMessage(formData);
+
+    dispatch(setArtifacts(data?.artifacts || []));
 
     dispatch(
       addMessages({
         role: "assistant",
-        content: data.answer,
-        images: data.images,
-
-      }),
+        content: data?.answer || "",
+        images: data?.images || [],
+      })
     );
+  } catch (error) {
+    console.error("Chat request failed:", error);
 
-    console.log(data);
-  };
+    let message = "Something went wrong while sending your message.";
+
+    if (error.response?.status === 413) {
+      message = "The uploaded file is too large. Please choose a smaller file.";
+    }
+
+    dispatch(
+      addMessages({
+        role: "assistant",
+        content: message,
+      })
+    );
+  } finally {
+    dispatch(setTyping(false));
+  }
+};
   const agents = [
     {
       id: "auto",
@@ -149,6 +195,47 @@ const ChatInput = () => {
             );
           })}
         </div>
+
+           {selectedFile && (
+          <div className="my-3">
+            <div className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+              {selectedFile?.type === "application/pdf" ? (
+                <FileText size={16} className="text-red-400" />
+              ) : (
+                selectedFile?.type.startsWith("image/") && (
+                  <img
+                    src={URL.createObjectURL(selectedFile)}
+                    alt={selectedFile.name}
+                    className="w-10 h-10 rounded-md object-cover mt-3"
+                  />
+                )
+              )}
+
+              
+
+              <div>
+              <p className="text-xs text-white">{selectedFile?.name}</p>
+
+              <p className="text-[10px] text-slate-500">
+                {Math.ceil(selectedFile.size / 1024)} KB
+              </p>
+            </div>
+
+            <button
+              className="ml-2"
+              onClick={() => {
+                setSelectedFile(null);
+                fileRef.current.value = "";
+              }}
+            >
+              <X size={14} className="text-slate-500 hover:text-white" />
+            </button>
+            </div>
+
+            
+          </div>
+        )}
+
         <textarea
           ref={textareaRef}
           onChange={(e) => {
@@ -162,7 +249,24 @@ const ChatInput = () => {
         />
         <div className="flex w-full max-w-full min-w-0 items-center justify-between">
           <div className="flex min-w-0 items-center gap-1">
-            <button className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-600 hover:text-slate-400 hover:bg-white/[0.05] border border-transparent hover:border-white/[0.06] transition-all duration-150 bg-transparent cursor-pointer">
+            <input
+              type="file"
+              accept=".pdf,image/*"
+              hidden
+              ref={fileRef}
+              onChange={(e) => {
+                const file = e.target.files[0];
+
+                if (file) {
+                  setSelectedFile(file);
+                }
+              }}
+            />
+
+            <button
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-600 hover:text-slate-400 hover:bg-white/[0.05] border border-transparent hover:border-white/[0.06] transition-all duration-150 bg-transparent cursor-pointer"
+              onClick={() => fileRef.current.click()}
+            >
               <Paperclip size={16} />
             </button>
 

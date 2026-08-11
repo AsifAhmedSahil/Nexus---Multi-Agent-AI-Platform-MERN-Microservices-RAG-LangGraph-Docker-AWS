@@ -40,7 +40,7 @@ app.use(
 );
 app.use(
   "/api/agent",protect,
-  proxyWithHeader(process.env.AGENT_SERVICE)
+  proxyWithHeader(process.env.AGENT_SERVICE,{ limit: "20mb" })
 );
 app.use(
   "/api/billing",protect,
