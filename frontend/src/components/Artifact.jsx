@@ -106,35 +106,33 @@ const PanelContent = ({
             }
 
             <div className="flex-1 overflow-hidden">
-              {(tab === "preview" && canPreview) ? (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5 }}
-                  className="w-full h-full"
-                >
-                  <iframe
-                    title="preview"
-                    srcDoc={previewDoc}
-                    sandbox="allow-scripts"
-                    className="w-full h-full bg-white"
-                  />
-                </motion.div>
-              ) : (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5 }}
-                  className="w-full h-full"
-                >
-                  <Editor
-                    theme="vs-dark"
-                    language={detectLanguage(file?.name)}
-                    value={file?.content}
-                    options={{ readOnly: true, minimap: { enabled: false }, fontSize: 13, wordWrap: "on", automaticLayout: true, scrollBeyondLastLine: false, padding: { top: 16 }, lineNumbers: "on", renderLineHighlight: "none" }}
-                  />
-                </motion.div>
-              )}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className={`w-full h-full ${tab === "preview" && canPreview ? "block" : "hidden"}`}
+              >
+                <iframe
+                  title="preview"
+                  srcDoc={previewDoc}
+                  sandbox="allow-scripts"
+                  className="w-full h-full bg-white"
+                />
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                className={`w-full h-full ${tab === "preview" && canPreview ? "hidden" : "block"}`}
+              >
+                <Editor
+                  theme="vs-dark"
+                  language={detectLanguage(file?.name)}
+                  value={file?.content}
+                  options={{ readOnly: true, minimap: { enabled: false }, fontSize: 13, wordWrap: "on", automaticLayout: true, scrollBeyondLastLine: false, padding: { top: 16 }, lineNumbers: "on", renderLineHighlight: "none" }}
+                />
+              </motion.div>
             </div>
           </div>
         ) : (
@@ -193,6 +191,10 @@ const Artifact = () => {
 
   const canPreview = Boolean(htmlFile);
 
+  const htmlBody = (htmlFile?.content || "")
+    .replace(/<script[^>]*src=["'][^"']*["'][^>]*>\s*<\/script>/gi, "")
+    .replace(/<link[^>]*href=["'][^"']*\.(css|js)["'][^>]*>/gi, "");
+
   const previewDoc = `
   <!DOCTYPE html>
 <html lang="en">
@@ -205,7 +207,7 @@ ${cssFile?.content || ""}
 </head>
 <body>
 
-${htmlFile?.content || ""}
+${htmlBody}
 
     <script>
     ${jsFile?.content || ""}
@@ -260,7 +262,7 @@ ${htmlFile?.content || ""}
 
     return "plaintext"
   };
-
+// update
   return (
     <>
 

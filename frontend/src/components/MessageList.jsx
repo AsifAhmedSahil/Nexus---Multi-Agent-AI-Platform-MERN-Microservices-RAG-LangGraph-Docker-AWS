@@ -21,7 +21,7 @@ const MessageList = () => {
   const { selectedConversation } = useSelector((state) => state.conversation);
 
   const { messages, typing } = useSelector((state) => state.message);
-  console.log(messages);
+
   return (
     <div className="flex-1 overflow-y-auto px-6 py-6 space-y-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
       {messages.length === 0 || !selectedConversation ? (
