@@ -265,7 +265,7 @@ ${htmlBody}
 
   return (
     <>
-
+{/* update */}
     <button
   onClick={() => setMobileOpen(true)}
   className="lg:hidden fixed bottom-24 right-4 z-40 flex items-center gap-2 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-[12px] font-medium shadow-lg shadow-indigo-500/20 border-none cursor-pointer transition-colors duration-150"
