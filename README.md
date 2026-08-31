@@ -391,7 +391,7 @@ Contributions are welcome! If you'd like to improve NexusAI:
 4. Push to the branch (`git push origin feature/amazing-idea`).
 5. Open a Pull Request.
 
-Please make sure your code follows the existing style (ES modules, ESLint config in `frontend/`) and update documentation where relevant.
+
 
 ---
 
