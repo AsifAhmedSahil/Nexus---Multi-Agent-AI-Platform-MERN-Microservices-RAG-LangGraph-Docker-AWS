@@ -1,6 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import MessageBubble from "./MessageBubble";
+import LoadingAnimation from "./LoadingAnimation";
 
 const TypingIndicator = () => (
   <div className="flex justify-start">
@@ -68,7 +69,8 @@ const MessageList = () => {
             </div>
           ))}
 
-          {typing && <TypingIndicator />}
+          {typing && <LoadingAnimation/>}
+          
         </div>
       )}
     </div>

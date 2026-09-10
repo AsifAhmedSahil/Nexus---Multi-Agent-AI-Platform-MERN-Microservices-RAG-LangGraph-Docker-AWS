@@ -41,6 +41,7 @@ const ChatInput = () => {
 
 const handleSendMessage = async () => {
   try {
+    
     let conversation = selectedConversation;
 
     if (!conversation) {
