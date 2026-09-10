@@ -27,7 +27,8 @@ const ChatInput = () => {
   const [value, setValue] = useState("");
   const [selectedAgent, setSelectedAgent] = useState("Auto");
   const { selectedConversation } = useSelector((state) => state.conversation);
-  const { messages } = useSelector((state) => state.message);
+        typing:false
+  const { messages,typing } = useSelector((state) => state.message);
   const [selectedFile, setSelectedFile] = useState(null);
   const fileRef = useRef(null);
   const dispatch = useDispatch();
@@ -276,7 +277,7 @@ const handleSendMessage = async () => {
             </button>
           </div>
           <button
-            disabled={!value}
+            disabled={!value && typing}
             onClick={handleSendMessage}
             className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border-none cursor-pointer transition-all duration-150 ${
               value.trim()
