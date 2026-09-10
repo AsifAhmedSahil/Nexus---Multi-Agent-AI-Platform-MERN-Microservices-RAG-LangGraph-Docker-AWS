@@ -66,9 +66,11 @@ const Sidebar = () => {
         {/* New Chat */}
         <button
           aria-label="New Chat"
-          onClick={handleCreateConversation}
+          onClick={() => {
+            handleCreateConversation();
+            dispatch(setSelectedConversation(null));
+          }}
           className="flex items-center justify-center w-9 h-9 rounded-xl text-slate-500 hover:text-slate-200 hover:bg-white/[0.05] transition-all duration-150 cursor-pointer"
-          onClick={() => dispatch(setSelectedConversation(null))}
         >
           <Plus size={16} />
         </button>
@@ -158,7 +160,8 @@ const Sidebar = () => {
             </span>
 
             <span className="rounded-full border border-indigo-500/20 bg-indigo-500/10 px-2 py-0.5 text-[10px] font-medium tracking-wide text-indigo-400">
-              Free
+            {userData?.plan || "Free"}
+              
             </span>
 
             <button
@@ -253,7 +256,7 @@ const Sidebar = () => {
                   <p className="truncate text-[13.5px] font-semibold text-slate-100">
                     {userData.name || "User"}
                   </p>
-                  <p className="text-[11px] text-slate-500">Free Plan</p>
+                  <p className="text-[11px] text-slate-500">{`${userData?.plan}` || "Free Plan"}</p>
                 </div>
 
                 <div className="flex items-center gap-1">
