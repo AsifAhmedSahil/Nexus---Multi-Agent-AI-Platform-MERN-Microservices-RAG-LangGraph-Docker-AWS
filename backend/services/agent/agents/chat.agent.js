@@ -6,10 +6,11 @@ import {
 import { getModel } from "../config/llmmodels.js";
 import { getMemory } from "../config/memory.js";
 import { deductCredits } from "../utils/deductCredits.js";
+import { checkAgentLimit } from "../config/agentLimit.js";
 
 export const chatAgent = async (state) => {
   try {
-    
+    await checkAgentLimit(state.userId,"chat")
     
     const llm = await getModel("chat");
 
@@ -139,9 +140,11 @@ ${searchContext}
   } catch (error) {
     console.error("Chat Agent Error:", error);
 
-    return {
-      ...state,
-      aiResponse: "Sorry, I was unable to process your request right now.",
-    };
+   
+   
+    return{
+        ...state,
+        aiResponse:error?.data?.message || "failed to generate chat."
+      }
   }
 };
