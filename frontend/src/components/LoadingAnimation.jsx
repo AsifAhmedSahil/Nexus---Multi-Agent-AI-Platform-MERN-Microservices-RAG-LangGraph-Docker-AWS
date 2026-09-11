@@ -1,5 +1,6 @@
 
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
+import { useEffect, useState } from "react";
 
 function LoadingAnimation() {
     const Thinking_Labels = ["Thinking", "Analyzing", "Reasoning", "Generating"];

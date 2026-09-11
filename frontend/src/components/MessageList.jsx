@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import MessageBubble from "./MessageBubble";
 import LoadingAnimation from "./LoadingAnimation";
@@ -31,7 +31,7 @@ const MessageList = () => {
       block: "end",
     });
   });
-}, [messages?.length, isLoading]);
+}, [messages?.length, typing]);
 
 
   return (

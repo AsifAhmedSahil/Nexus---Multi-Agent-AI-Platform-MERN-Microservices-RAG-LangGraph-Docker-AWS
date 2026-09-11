@@ -5,7 +5,7 @@ const getMessages =async (id) => {
   try {
     const {data} = await api.get(`/api/chat/get-messages/${id}`)
     console.log(data)
-    return data
+        return Array.isArray(data) ? data : []
   } catch (error) {
     console.log(error)
     return []

@@ -30,9 +30,10 @@ const Sidebar = () => {
   const [showBilling, setShowBilling] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const dispatch = useDispatch();
-  const { conversations, selectedConversation } = useSelector(
+  const { conversations: rawConversations, selectedConversation } = useSelector(
     (state) => state.conversation,
   );
+  const conversations = Array.isArray(rawConversations) ? rawConversations : [];
   const { userData } = useSelector((state) => state.user);
   useEffect(() => {
     const getConv = async () => {
