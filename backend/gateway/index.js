@@ -49,6 +49,10 @@ app.use(
 
 app.get("/api/me",protect,getCurrentUser)
 
+app.get("/",(req,res)=>{
+  res.json({message:"Hello from gateway"})
+})
+
 app.listen(port,()=>{
     console.log(`gateway started at port: ${port}`)
 })
