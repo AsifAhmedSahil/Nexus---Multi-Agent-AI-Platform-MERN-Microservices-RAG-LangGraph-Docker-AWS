@@ -5,6 +5,7 @@ import {
   ImageIcon,
   MessageSquare,
   Mic,
+  MicOff,
   Paperclip,
   Presentation,
   Send,
@@ -22,6 +23,7 @@ import {
   setSelectedConversation,
 } from "../redux/conversationSlice";
 import { updateConversation } from "../features/updateConversation";
+import { useEffect } from "react";
 
 const ChatInput = () => {
   const [value, setValue] = useState("");
@@ -30,6 +32,8 @@ const ChatInput = () => {
         typing:false
   const { messages,typing } = useSelector((state) => state.message);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [listening,setListening] = useState(false)
+  const recognitionRef = useRef(null)
   const fileRef = useRef(null);
   const dispatch = useDispatch();
   const textareaRef = useRef(null);
@@ -39,6 +43,81 @@ const ChatInput = () => {
     el.style.height = "auto";
     el.style.height = `${el.scrollHeight}px`;
   };
+
+//   useEffect(() => {
+//   const SpeechRecognition =
+//     window.SpeechRecognition || window.webkitSpeechRecognition;
+
+//   if (!SpeechRecognition) return;
+
+//   const recognition = new SpeechRecognition();
+
+//   recognition.lang = "en-US";
+//   recognition.interimResults = true;
+//   recognition.continuous = true;
+
+//   recognition.onresult = (event) => {
+//     console.log(event);
+//   };
+
+//   recognitionRef.current = recognition;
+// }, []);
+
+useEffect(() => {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    console.log("Speech Recognition not supported");
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+
+  recognition.lang = "en-US";
+  recognition.interimResults = true;
+  recognition.continuous = true;
+
+  recognition.onresult = (event) => {
+  let transcript = "";
+
+  for (
+    let index = event.resultIndex;
+    index < event.results.length;
+    index++
+  ) {
+    transcript += event.results[index][0].transcript;
+  }
+
+  setValue(transcript);
+};
+
+recognition.onend=()=>{
+  setListening(false)
+}
+
+
+  recognitionRef.current = recognition;
+}, []);
+
+const toggleMic = () => {
+  if (!recognitionRef.current) {
+    alert("speech recognition not supported");
+    return;
+  }
+
+  if (listening) {
+    recognitionRef.current.stop();
+    setListening(false);
+  } else {
+    recognitionRef.current.start();
+    setListening(true);
+  }
+};
+
+
+
+
 
 const handleSendMessage = async () => {
   try {
@@ -272,8 +351,13 @@ const handleSendMessage = async () => {
               <Paperclip size={16} />
             </button>
 
-            <button className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-600 hover:text-slate-400 hover:bg-white/[0.05] border border-transparent hover:border-white/[0.06] transition-all duration-150 bg-transparent cursor-pointer">
-              <Mic size={16} />
+            <button 
+            onClick={toggleMic}
+            className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg  transition-all duration-150 bg-transparent cursor-pointer ${listening ? "bg-red-500 text-white":"text-slate-600 hover:bg-white/[0.05]"}`}>
+              {
+                listening? <Mic size={16} />:<MicOff size={16} />
+              }
+              
             </button>
           </div>
           <button
